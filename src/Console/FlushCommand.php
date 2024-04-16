@@ -13,7 +13,9 @@ class FlushCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scout:flush {model : Class name of the model to flush}';
+    protected $signature = 'scout:flush 
+        {model : Class name of the model to flush}
+        {--c|searchableAs= : Specific Hiring Org ID to flush';
 
     /**
      * The console command description.
@@ -30,9 +32,13 @@ class FlushCommand extends Command
     public function handle()
     {
         $class = $this->argument('model');
-
-        $model = new $class;
-
+        $searchableAs = $this->option('searchableAs');
+        if ($searchableAs) {
+            $model = $this->app->makeWith($class, ['hiring_organization_id' => $searchableAs]);
+        } else {
+            $model = new $class;
+        }
+    
         $model::removeAllFromSearch();
 
         $this->info('All ['.$class.'] records have been flushed.');
